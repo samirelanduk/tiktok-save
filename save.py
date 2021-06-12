@@ -38,6 +38,7 @@ videos = [v for v in videos if video_url_to_id(v["Link"]) not in existing_ids]
 # Save videos and metadata
 failures = []
 for video in tqdm(videos):
+    timestamp = date_to_timestamp(video["Date"])
     tiktok_id = video_url_to_id(video["Link"])
     tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
     try:
@@ -45,9 +46,9 @@ for video in tqdm(videos):
     except:
         failures.append(tiktok_dict)
         continue
-    with open(os.path.join(location, f"{tiktok_id}.mp4"), "wb") as f:
+    with open(os.path.join(location, f"{timestamp}_{tiktok_id}.mp4"), "wb") as f:
         f.write(tiktok_data)
-    with open(os.path.join(location, f"{tiktok_id}.json"), "w") as f:
+    with open(os.path.join(location, f"{timestamp}_{tiktok_id}.json"), "w") as f:
         json.dump(tiktok_dict, f, indent=4)
     time.sleep(1) # don't be suspicious
 if len(failures): print("Failed downloads:", len(failures))
