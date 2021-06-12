@@ -45,7 +45,7 @@ if len(videos) == 0:
 failures = []
 for video in tqdm(videos):
     timestamp = date_to_timestamp(video["Date"])
-    tiktok_id = video_url_to_id(video["Link"])
+    tiktok_id = video_url_to_id(video.get("Link", video["VideoLink"]))
     tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
     try:
         tiktok_data = api.get_Video_By_TikTok(tiktok_dict, custom_did=did)
