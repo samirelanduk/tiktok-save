@@ -3,6 +3,22 @@ import json
 import time
 from datetime import datetime
 
+def videos_to_check(videos, location, check_failures):
+    """Get a subset of all videos to actually check."""
+
+    existing_ids = get_existing_ids(location)
+    failed_ids = get_failed_ids(location)
+    if check_failures:
+        return [
+            v for v in videos if video_url_to_id(v["Link"]) in failed_ids
+        ]
+    else:
+        return [
+            v for v in videos if video_url_to_id(v["Link"]) not in existing_ids
+            and video_url_to_id(v["Link"]) not in failed_ids
+        ]
+
+
 def get_existing_ids(location):
     """Gets the video IDs already present in a directory."""
 
@@ -53,3 +69,15 @@ def record_failure(tiktok_id, location):
     failures[tiktok_id] = time.time()
     with open(file_location, "w") as f:
         json.dump(failures, f, indent=4)
+
+
+def remove_failure(tiktok_id, location):
+    """Remove a failure record."""
+
+    file_location = os.path.join(location, "failures.json")
+    with open(file_location) as f:
+        failures = json.load(f)
+        with open(file_location, "w") as f:
+            json.dump({
+                k: v for k, v in failures.items() if k != tiktok_id
+            }, f, indent=4)
