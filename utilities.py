@@ -10,12 +10,12 @@ def videos_to_check(videos, location, check_failures):
     failed_ids = get_failed_ids(location)
     if check_failures:
         return [
-            v for v in videos if video_url_to_id(v.get("Link", v["VideoLink"])) in failed_ids
+            v for v in videos if video_url_to_id(v.get("Link", v.get("VideoLink"))) in failed_ids
         ]
     else:
         return [
-            v for v in videos if video_url_to_id(v.get("Link", v["VideoLink"])) not in existing_ids
-            and video_url_to_id(v.get("Link", v["VideoLink"])) not in failed_ids
+            v for v in videos if video_url_to_id(v.get("Link", v.get("VideoLink"))) not in existing_ids
+            and video_url_to_id(v.get("Link", v.get("VideoLink"))) not in failed_ids
         ]
 
 
