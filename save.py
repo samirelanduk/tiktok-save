@@ -2,8 +2,8 @@
 
 import argparse
 import json
+import sys
 import random
-import os
 import time
 from tqdm import tqdm
 from TikTokApi import TikTokApi
@@ -33,7 +33,14 @@ did = str(random.randint(10000, 999999999))
 
 # What videos are already accounted for?
 existing_ids = get_existing_ids(location)
-videos = [v for v in videos if video_url_to_id(v["Link"]) not in existing_ids]
+failed_ids = get_failed_ids(location)
+videos = [v for v in videos if video_url_to_id(v["Link"]) not in existing_ids
+        and video_url_to_id(v["Link"]) not in failed_ids]
+
+# Worth doing anything?
+if len(videos) == 0:
+    print("Nothing new to download")
+    sys.exit()
 
 # Save videos and metadata
 failures = []
@@ -45,10 +52,10 @@ for video in tqdm(videos):
         tiktok_data = api.get_Video_By_TikTok(tiktok_dict, custom_did=did)
     except:
         failures.append(tiktok_dict)
+        record_failure(tiktok_id, location)
         continue
-    with open(os.path.join(location, f"{timestamp}_{tiktok_id}.mp4"), "wb") as f:
-        f.write(tiktok_data)
-    with open(os.path.join(location, f"{timestamp}_{tiktok_id}.json"), "w") as f:
-        json.dump(tiktok_dict, f, indent=4)
+    save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id)
     time.sleep(1) # don't be suspicious
+
+# Any problems to report?
 if len(failures): print("Failed downloads:", len(failures))
