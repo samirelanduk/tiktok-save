@@ -48,9 +48,10 @@ for video in tqdm(videos):
     tiktok_id = video_url_to_id(video.get("Link", video.get("VideoLink")))
     tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
     try:
-        tiktok_data = api.get_Video_By_TikTok(tiktok_dict, custom_did=did)
+        tiktok_data = api.get_video_by_tiktok(tiktok_dict, custom_did=did)
         if check_failures: remove_failure(tiktok_id, location)
-    except:
+    except Exception as e:
+        print(e)
         failures.append(tiktok_dict)
         record_failure(tiktok_id, location)
         continue
