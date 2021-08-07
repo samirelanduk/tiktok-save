@@ -51,7 +51,6 @@ for video in tqdm(videos):
         tiktok_data = api.get_video_by_tiktok(tiktok_dict, custom_did=did)
         if check_failures: remove_failure(tiktok_id, location)
     except Exception as e:
-        print(e)
         failures.append(tiktok_dict)
         record_failure(tiktok_id, location)
         continue
