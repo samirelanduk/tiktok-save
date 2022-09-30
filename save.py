@@ -22,7 +22,7 @@ location = args.location[0]
 check_failures = args.failures
 
 # Open JSON
-with open(source) as f: data = json.load(f)
+with open(source, encoding="utf8") as f: data = json.load(f)
 
 # Get list
 activity = data["Activity"]
