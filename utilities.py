@@ -23,7 +23,7 @@ def get_existing_ids(location):
     """Gets the video IDs already present in a directory."""
 
     files = os.listdir(location)
-    return [f.split(".")[0].split("_")[1] for f in files if f.endswith(".mp4")]
+    return [f.split(".")[0].split("_")[-1] for f in files if f.endswith(".mp4")]
 
 
 def get_failed_ids(location):
@@ -48,11 +48,11 @@ def video_url_to_id(url):
     return url.split("/")[-2]
 
 
-def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id):
+def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id, uniqueId):
     """Saves the two files to disk."""
 
     dt_string = datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%dT%H-%M-%S")
-    name = f"{dt_string}_{tiktok_id}"
+    name = f"{uniqueId}_๘_{dt_string}_{tiktok_id}"
     with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
         f.write(tiktok_data)
     with open(os.path.join(location, f"{name}.json"), "w") as f:
