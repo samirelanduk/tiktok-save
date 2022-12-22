@@ -31,12 +31,14 @@ playwright is a headless browser that TikTok-Api uses to access TikTok - you mig
 Create a folder for your liked videos and/or a folder for your bookmarked videos. Then run:
 
 ```sh
+mkdir liked_videos_path
 ./save.py liked user_data.json liked_videos_path
 ```
 
 and/or
 
 ```sh
+mkdir bookmarked_videos_path
 ./save.py bookmarked user_data.json bookmarked_videos_path
 ```
 
