@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -47,14 +47,16 @@ for video in tqdm(videos):
     timestamp = date_to_timestamp(video["Date"])
     tiktok_id = video_url_to_id(video.get("Link", video.get("VideoLink")))
     tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
+    uniqueId = "unknown"
     try:
+        uniqueId = tiktok_dict["itemInfo"]["itemStruct"]["author"]["uniqueId"]
         tiktok_data = api.get_video_by_tiktok(tiktok_dict, custom_did=did)
         if check_failures: remove_failure(tiktok_id, location)
     except Exception as e:
         failures.append(tiktok_dict)
         record_failure(tiktok_id, location)
         continue
-    save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id)
+    save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id,uniqueId)
     time.sleep(1) # don't be suspicious
 
 # Any problems to report?
