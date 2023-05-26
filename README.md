@@ -23,7 +23,7 @@ playwright is a headless browser that TikTok-Api uses to access TikTok - you mig
 
 ## Use
 
-Create a folder for your liked videos and a folder for your bookmarked videos. Then run:
+Create a folder for your liked videos and a folder for your bookmarked videos. Then, from the `tiktok-save` directory, run:
 
 ```bash
 $ ./save.py liked user_data.json liked_videos_path
