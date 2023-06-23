@@ -4,3 +4,5 @@ __pycache__
 *.json
 *.mp4
 bookmarked_videos_path
+temp_rename
+user_data.json
