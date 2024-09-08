@@ -8,54 +8,68 @@ import time
 from tqdm import tqdm
 from TikTokApi import TikTokApi
 from utilities import *
+import asyncio
 
-# Parse script arguments
-parser = argparse.ArgumentParser(description="Save tiktok videos to disk.")
-parser.add_argument("mode", type=str, nargs=1, choices=["liked", "bookmarked"], help="The type of video to download.")
-parser.add_argument("source", type=str, nargs=1, help="The tiktok JSON file.")
-parser.add_argument("location", type=str, nargs=1, help="The folder to save to.")
-parser.add_argument("--failures", type=bool, nargs='?', const=True, default=False, help="Look at previous failures.")
-args = parser.parse_args()
-mode = args.mode[0]
-source = args.source[0]
-location = args.location[0]
-check_failures = args.failures
 
-# Open JSON
-with open(source, encoding="utf8") as f: data = json.load(f)
 
-# Get list
-activity = data["Activity"]
-videos = activity["Like List"]["ItemFavoriteList"] if mode == "liked" else \
- activity["Favorite Videos"]["FavoriteVideoList"]
+
 
 # Initialise tiktok API connector
-api = TikTokApi.get_instance()
-did = str(random.randint(10000, 999999999))
+async def get_videos():
+    ms_token = os.environ.get("ms_token", None) # get your own ms_token from your cookies on tiktok.com
+    async with TikTokApi() as api:
+        await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3)
+        print("here")
+        ms_token = os.environ.get("ms_token", None) # get your own ms_token from your cookies on tiktok.com
+            # Parse script arguments
+        parser = argparse.ArgumentParser(description="Save tiktok videos to disk.")
+        parser.add_argument("mode", type=str, nargs=1, choices=["liked", "bookmarked"], help="The type of video to download.")
+        parser.add_argument("source", type=str, nargs=1, help="The tiktok JSON file.")
+        parser.add_argument("location", type=str, nargs=1, help="The folder to save to.")
+        parser.add_argument("--failures", type=bool, nargs='?', const=True, default=False, help="Look at previous failures.")
+        args = parser.parse_args()
+        mode = args.mode[0]
+        source = args.source[0]
+        location = args.location[0]
+        check_failures = args.failures
 
-# What videos are already accounted for?
-videos = videos_to_check(videos, location, check_failures)
+        # Open JSON
+        with open(source, encoding="utf8") as f: data = json.load(f)
 
-# Worth doing anything?
-if len(videos) == 0:
-    print("Nothing new to download")
-    sys.exit()
+        # Get list
+        activity = data["Activity"]
+        videos = activity["Like List"]["ItemFavoriteList"] if mode == "liked" else \
+        activity["Favorite Videos"]["FavoriteVideoList"]
+    
+        did = str(random.randint(10000, 999999999))
 
-# Save videos and metadata
-failures = []
-for video in tqdm(videos):
-    timestamp = date_to_timestamp(video["Date"])
-    tiktok_id = video_url_to_id(video.get("Link", video.get("VideoLink")))
-    tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
-    try:
-        tiktok_data = api.get_video_by_tiktok(tiktok_dict, custom_did=did)
-        if check_failures: remove_failure(tiktok_id, location)
-    except Exception as e:
-        failures.append(tiktok_dict)
-        record_failure(tiktok_id, location)
-        continue
-    save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id)
-    time.sleep(1) # don't be suspicious
+        # What videos are already accounted for?
+        videos = videos_to_check(videos, location, check_failures)
 
-# Any problems to report?
-if len(failures): print("Failed downloads:", len(failures))
+        # Worth doing anything?
+        if len(videos) == 0:
+            print("Nothing new to download")
+            sys.exit()
+
+        # Save videos and metadata
+        failures = []
+        for video in tqdm(videos):
+            timestamp = date_to_timestamp(video["Date"])
+            tiktok_id = video_url_to_id(video.get("Link", video.get("VideoLink")))
+            
+            tiktok_dict = api.get_tiktok_by_id(tiktok_id, custom_did=did)
+            try:
+                tiktok_data = api.get_video_by_tiktok(tiktok_dict, custom_did=did)
+                if check_failures: remove_failure(tiktok_id, location)
+            except Exception as e:
+                failures.append(tiktok_dict)
+                record_failure(tiktok_id, location)
+                continue
+            save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id)
+            time.sleep(1) # don't be suspicious
+
+        # Any problems to report?
+        if len(failures): print("Failed downloads:", len(failures))
+
+if __name__ == "__main__":
+    asyncio.run(get_videos())
