@@ -52,14 +52,14 @@ def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id):
     """Saves the two files to disk."""
 
     dt_string = datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%dT%H-%M-%S")
-    name = f"{dt_string}_{tiktok_id}"
+    name = tiktok_id
     with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
         f.write(tiktok_data)
     with open(os.path.join(location, f"{name}.json"), "w") as f:
         json.dump(tiktok_dict, f, indent=4)
 
 
-def record_failure(tiktok_id, location):
+def record_failure(tiktok_id, error_message, location):
     """Make a note that a certain video can't be downloaded."""
 
     file_location = os.path.join(location, "failures.json")
@@ -68,7 +68,7 @@ def record_failure(tiktok_id, location):
             failures = json.load(f)
     else:
         failures = {}
-    failures[tiktok_id] = time.time()
+    failures[tiktok_id] = [time.time(), error_message]
     with open(file_location, "w") as f:
         json.dump(failures, f, indent=4)
 
