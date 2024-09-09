@@ -8,11 +8,14 @@ def videos_to_check(videos, location, check_failures):
 
     existing_ids = get_existing_ids(location)
     failed_ids = get_failed_ids(location)
+    
     if check_failures:
+        # Only attempt to download previously failed videos
         return [
             v for v in videos if video_url_to_id(v.get("Link", v.get("VideoLink"))) in failed_ids
         ]
     else:
+        # Download new videos, skipping both existing and failed ones
         return [
             v for v in videos if video_url_to_id(v.get("Link", v.get("VideoLink"))) not in existing_ids
             and video_url_to_id(v.get("Link", v.get("VideoLink"))) not in failed_ids
@@ -28,11 +31,11 @@ def get_existing_ids(location):
 
 def get_failed_ids(location):
     """Gets the video IDs of previously failed videos."""
-
     try:
-        with open(os.path.join(location, "failures.json")) as f:
+        with open(os.path.join(location, "logs", "download_failures.json"), "r") as f:
             return list(json.load(f).keys())
-    except FileNotFoundError: return []
+    except FileNotFoundError:
+        return []
 
 
 def date_to_timestamp(time):
@@ -53,9 +56,20 @@ def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id):
 
     dt_string = datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%dT%H-%M-%S")
     name = tiktok_id
+    
+    # Create main location directory if it doesn't exist
+    os.makedirs(location, exist_ok=True)
+    
+    # Save video file in the main location
     with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
         f.write(tiktok_data)
-    with open(os.path.join(location, f"{name}.json"), "w") as f:
+    
+    # Create logs directory if it doesn't exist
+    logs_dir = os.path.join(location, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Save JSON file in the logs directory
+    with open(os.path.join(logs_dir, f"{name}.json"), "w") as f:
         json.dump(tiktok_dict, f, indent=4)
 
 
