@@ -32,4 +32,26 @@ $ ./save.py bookmarked user_data.json bookmarked_videos_path
 
 Here `user_data.json` is the TikTok JSON export, assuming it's in the current directory - provide the path to it if not.
 
-Any failures (where a video no longer exists for example) are saved in a `failures.json` file, and won't be re-requested on later downloads. If you want to try previous failures, use the `--failures` argument.
+Any failures (where a video no longer exists for example) are saved in a `download_failures.json` file, and won't be re-requested on later downloads. If you want to try previous failures, use the `--failures` argument.
+
+### Parameters
+
+- `<mode>`: Specify the type of videos to download. Options are:
+  - `liked`: Download videos that you have liked.
+  - `bookmarked`: Download videos that you have bookmarked.
+
+- `<source>`: The path to the TikTok JSON file containing the video information.
+
+- `<location>`: The directory where the downloaded videos and logs will be saved.
+
+- `--failures`: (Optional) If specified, the tool will attempt to download only previously failed videos.
+
+- `--keywords`: (Optional) A list of keywords seperated by spaces to filter the videos. Only videos containing these keywords in their description, hashtags, or suggested words will be downloaded. This is useful if you want to download videos related to a specific topic such as recipes.
+    ex. `./save.py bookmarks user_data.json liked_videos --keywords recipe cooking food`
+
+## Output
+
+- Downloaded videos will be saved in the specified location.
+- Metadata for each video will be saved as a JSON file in a `logs` directory within the specified location.
+- Failed downloads will be recorded in `download_failures.json`.
+- Unique IDs of failed downloads and their counts will be saved in `uniqueIDs.txt`.
