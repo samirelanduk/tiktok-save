@@ -73,7 +73,10 @@ async def get_videos():
         for videoInfo in tqdm(videos):
             author_unique_id = "unknown"  # Default value
             try:
-                video = api.video(url=share_url_to_user(videoInfo["link"]))
+                # support for both likes and bookmarks
+                link = share_url_to_user(videoInfo.get("link") or videoInfo.get("Link"))
+
+                video = api.video(url=link)
                 tiktok_id = video.id[:-1]
                 
                 # define variable as empty in case video info fails
@@ -107,7 +110,7 @@ async def get_videos():
                 
                 time.sleep(1)  # don't be suspicious
             except Exception as e:
-                error_message = f"Error processing video {videoInfo['link']}: {str(e)}"
+                error_message = f"Error processing video {link}: {str(e)}"
 
                 # Retry video download using manual request method + alternative bitrate url
                 if tiktok_dict is not None and "imagePost" not in tiktok_dict:
@@ -119,11 +122,11 @@ async def get_videos():
                         time.sleep(1)  # don't be suspicious
                         continue
                     except Exception as e2:
-                        error_message = f"Failed again for {videoInfo['link']}: {str(e2)}"
+                        error_message = f"Failed again for {link}: {str(e2)}"
 
                 tqdm.write(error_message)
                 failures[tiktok_id] = {
-                    "link": videoInfo["link"],
+                    "link": link,
                     "error": str(e),
                     "traceback": traceback.format_exc(),
                     "timestamp": time.time(),

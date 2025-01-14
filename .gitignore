@@ -3,5 +3,6 @@ __pycache__
 .DS_Store
 *.json
 *.mp4
-liked_videos
+*.jpeg
 *.zip
+*.txt

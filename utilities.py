@@ -12,7 +12,7 @@ def videos_to_check(videos, location, check_failures):
     failed_ids = get_failed_ids(location)
     
     def safe_video_url_to_id(video):
-        url = video.get("link") or video.get("VideoLink")
+        url = video.get("link") or video.get("Link") or video.get("VideoLink")
         try:
             return video_url_to_id(url)
         except Exception:
