@@ -73,7 +73,7 @@ async def get_videos():
         for videoInfo in tqdm(videos):
             author_unique_id = "unknown"  # Default value
             try:
-                video = api.video(url=videoInfo["link"])
+                video = api.video(url=share_url_to_user(videoInfo["link"]))
                 tiktok_id = video.id[:-1]
                 
                 # define variable as empty in case video info fails
@@ -139,6 +139,7 @@ async def get_videos():
         save_unique_ids_with_counts(location, unique_ids_count)
 
 def download_images(images):
+    """Based on this work https://github.com/financiallyruined/TikTok-Multi-Downloader"""
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
         'Accept': '*/*',
@@ -162,6 +163,7 @@ def download_images(images):
     return imageData
 
 def alt_video_download(tiktok_dict):
+    """Based on this work https://github.com/financiallyruined/TikTok-Multi-Downloader"""
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
         'Accept': '*/*',
