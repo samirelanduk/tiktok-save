@@ -2,6 +2,8 @@ import os
 import json
 import time
 from datetime import datetime
+from tqdm import tqdm
+
 
 def videos_to_check(videos, location, check_failures):
     """Get a subset of all videos to actually check."""
@@ -10,7 +12,7 @@ def videos_to_check(videos, location, check_failures):
     failed_ids = get_failed_ids(location)
     
     def safe_video_url_to_id(video):
-        url = video.get("Link") or video.get("VideoLink")
+        url = video.get("link") or video.get("Link") or video.get("VideoLink")
         try:
             return video_url_to_id(url)
         except Exception:
@@ -65,20 +67,35 @@ def video_url_to_id(url):
 
     return url.split("/")[-2]
 
+def share_url_to_user(url):
+    """Converts a TikTok share URL to a blank normal url."""
 
-def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id):
+    userUrl = url.replace('share', '@')
+    userUrl = userUrl.replace('tiktokv', 'tiktok')
+    return userUrl
+
+def save_files(location, tiktok_dict, tiktok_data, tiktok_id, mode):
     """Saves the two files to disk."""
-
-    dt_string = datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%dT%H-%M-%S")
     name = tiktok_id
     
     # Create main location directory if it doesn't exist
     os.makedirs(location, exist_ok=True)
     
     # Save video file in the main location
-    with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
-        f.write(tiktok_data)
-    
+    if mode == "video":
+        with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
+            f.write(tiktok_data)
+    elif mode == "video_alt":
+        with open(os.path.join(location, f"{name}.mp4"), "wb") as f:
+            for chunk in tiktok_data.iter_content(chunk_size=1024):
+                f.write(chunk)
+    else:
+        imageFolder = os.path.join(location, f"{name}")
+        os.makedirs(imageFolder, exist_ok=True)
+        for index, image in enumerate(tiktok_data):
+            with open(os.path.join(imageFolder, f"{index}.jpeg"), "wb") as f:
+                f.write(image)
+
     # Create logs directory if it doesn't exist
     logs_dir = os.path.join(location, "logs")
     os.makedirs(logs_dir, exist_ok=True)
@@ -86,7 +103,6 @@ def save_files(location, tiktok_dict, tiktok_data, timestamp, tiktok_id):
     # Save JSON file in the logs directory
     with open(os.path.join(logs_dir, f"{name}.json"), "w") as f:
         json.dump(tiktok_dict, f, indent=4)
-
 
 def record_failure(tiktok_id, error_message, location, author_unique_id):
     """Make a note that a certain video can't be downloaded."""

@@ -8,9 +8,13 @@ You will need a JSON export of your TikTok data. TikTok lets you request this fr
 
 ## Installation
 
+> [!IMPORTANT]
+> This currently only been tested on Python 3.12.8 and playwright 1.39.0. Either install and setup a virtual environment for those two specific versions, or uninstall and reinstall to this exact versions.
+
 ```bash
 $ git clone https://github.com/samirelanduk/tiktok-save .
 $ cd tiktok-save
+$ pip install playwright==1.39.0
 $ python -m playwright install
 $ pip install -r requirements.txt
 ```
@@ -52,6 +56,7 @@ Any failures (where a video no longer exists for example) are saved in a `downlo
 ## Output
 
 - Downloaded videos will be saved in the specified location.
+- Photo galleries will be downloaded into a subfolder with the ID
 - Metadata for each video will be saved as a JSON file in a `logs` directory within the specified location.
 - Failed downloads will be recorded in `download_failures.json`.
 - Unique IDs of failed downloads and their counts will be saved in `uniqueIDs.txt`.
