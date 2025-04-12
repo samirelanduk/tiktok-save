@@ -4,12 +4,12 @@ A Python utility for backing up your liked and bookmarked videos on TikTok. It w
 
 ## Before Starting
 
-You will need a JSON export of your TikTok data. TikTok lets you request this from the app, and it can take a few days for them to prepare this, so if you're planning on using this tool soon, consider requesting it now. If you have notifications turned off for TikTok, don't forget to check for it to be ready. You need the **JSON** version.
+You will need a JSON export of your TikTok data. TikTok lets you request this from the app, and it can take a few days for them to prepare this, so if you're planning on using this tool soon, consider requesting it now. You need the **JSON** version.
 
 ## Installation
 
 > [!IMPORTANT]
-> This currently only been tested on Python 3.12.8 and playwright 1.39.0. Either install and setup a virtual environment for those two specific versions, or uninstall and reinstall to this exact versions.
+> This has currently only been tested on Python 3.12.8 and playwright 1.39.0. Either install and set up a virtual environment for those two specific versions, or uninstall and reinstall these exact versions.
 
 ```bash
 $ git clone https://github.com/samirelanduk/tiktok-save .
@@ -50,8 +50,8 @@ Any failures (where a video no longer exists for example) are saved in a `downlo
 
 - `--failures`: (Optional) If specified, the tool will attempt to download only previously failed videos.
 
-- `--keywords`: (Optional) A list of keywords seperated by spaces to filter the videos. Only videos containing these keywords in their description, hashtags, or suggested words will be downloaded. This is useful if you want to download videos related to a specific topic such as recipes.
-    ex. `./save.py bookmarks user_data.json liked_videos --keywords recipe cooking food`
+- `--keywords`: (Optional) A list of keywords separated by spaces to filter the videos. Only videos containing these keywords in their description, hashtags, or suggested words will be downloaded. This is useful if you want to download videos related to a specific topic such as recipes.
+    eg. `./save.py bookmarks user_data.json liked_videos --keywords recipe cooking food`
 
 ## Output
 
