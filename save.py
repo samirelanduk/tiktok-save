@@ -1,19 +1,22 @@
 #!/usr/bin/env python 
 
 import argparse
-import json
-import sys
-import random
-import time
-import requests
-from tqdm import tqdm
-from TikTokApi import TikTokApi
-from utilities import *
-import asyncio
-import traceback
-import os
 import ast
+import asyncio
+import json
+import os
+import random
+import sys
+import time
+import traceback
 from collections import defaultdict
+
+import requests
+from TikTokApi import TikTokApi
+from tqdm import tqdm
+
+from utilities import *
+
 
 def parse_keywords(value):
     if value.startswith('[') and value.endswith(']'):
@@ -27,7 +30,7 @@ async def get_videos():
     ms_token = os.environ.get("ms_token", None) # get your own ms_token from your cookies on tiktok.com
     async with TikTokApi() as api:
         await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3)
-       
+
         # Parse script arguments
         parser = argparse.ArgumentParser(description="Save tiktok videos to disk.")
         parser.add_argument("mode", type=str, nargs=1, choices=["liked", "bookmarked"], help="The type of video to download.")
@@ -40,7 +43,7 @@ async def get_videos():
         source = args.source[0]
         location = args.location[0]
         keywords = [k.lower() for k in args.keywords] if args.keywords else None
-        
+
         # Create main location directory if it doesn't exist
         os.makedirs(location, exist_ok=True)
 
@@ -54,10 +57,10 @@ async def get_videos():
         with open(source, encoding="utf8") as f: data = json.load(f)
 
         # Get list
-        activity = data["Activity"]
+        activity = data["Your Activity"]
         videos = activity["Like List"]["ItemFavoriteList"] if mode == "liked" else \
         activity["Favorite Videos"]["FavoriteVideoList"]
-    
+
         # What videos are already accounted for?
         print("Checking for videos to download...")
         videos = videos_to_check(videos, location, check_failures)
@@ -78,7 +81,7 @@ async def get_videos():
 
                 video = api.video(url=link)
                 tiktok_id = video.id[:-1]
-                
+
                 # define variable as empty in case video info fails
                 tiktok_dict = {}
                 video_info = await video.info()
@@ -96,7 +99,7 @@ async def get_videos():
                     except Exception as e:
                         tqdm.write(f"Error filtering video {tiktok_id}: {str(e)}")
                         continue
-                
+
                 # handle image posts here
                 if "imagePost" in tiktok_dict:
                     imageBytes = download_images(tiktok_dict["imagePost"]["images"])
@@ -104,10 +107,10 @@ async def get_videos():
                 else:
                     video_bytes = await video.bytes()
                     save_files(location, tiktok_dict, video_bytes, tiktok_id, "video")
-                
+
                 # Remove from failures if it was successfully downloaded
                 failures.pop(tiktok_id, None)
-                
+
                 time.sleep(1)  # don't be suspicious
             except Exception as e:
                 error_message = f"Error processing video {link}: {str(e)}"
@@ -133,7 +136,7 @@ async def get_videos():
                     "author_unique_id": author_unique_id
                 }
                 unique_ids_count[author_unique_id] += 1
-        
+
         # Save updated failures
         save_failures(location, failures)
         print(f"Failed downloads: {len(failures)}")

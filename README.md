@@ -9,12 +9,12 @@ You will need a JSON export of your TikTok data. TikTok lets you request this fr
 ## Installation
 
 > [!IMPORTANT]
-> This has currently only been tested on Python 3.12.8 and playwright 1.39.0. Either install and set up a virtual environment for those two specific versions, or uninstall and reinstall these exact versions.
+> This has currently only been tested on Python 3.12.8 and playwright 1.52.0. Either install and set up a virtual environment for those two specific versions, or uninstall and reinstall these exact versions.
 
 ```bash
 $ git clone https://github.com/samirelanduk/tiktok-save .
 $ cd tiktok-save
-$ pip install playwright==1.39.0
+$ pip install playwright==1.52.0
 $ python -m playwright install
 $ pip install -r requirements.txt
 ```
