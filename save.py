@@ -33,7 +33,7 @@ async def get_videos():
 
         # Parse script arguments
         parser = argparse.ArgumentParser(description="Save tiktok videos to disk.")
-        parser.add_argument("mode", type=str, nargs=1, choices=["liked", "bookmarked"], help="The type of video to download.")
+        parser.add_argument("mode", type=str, nargs=1, choices=["liked", "bookmarked", "watched"], help="The type of video to download.")
         parser.add_argument("source", type=str, nargs=1, help="The tiktok JSON file.")
         parser.add_argument("location", type=str, nargs=1, help="The folder to save to.")
         parser.add_argument("--failures", type=bool, nargs='?', const=True, default=False, help="Look at previous failures.")
@@ -58,8 +58,12 @@ async def get_videos():
 
         # Get list
         activity = data["Your Activity"]
-        videos = activity["Like List"]["ItemFavoriteList"] if mode == "liked" else \
-        activity["Favorite Videos"]["FavoriteVideoList"]
+        if mode == "liked":
+            videos = activity["LikeList"]["ItemFavoriteList"]
+        elif mode == "bookmarked":
+            videos = activity["Favorite Videos"]["FavoriteVideoList"]
+        else:
+            videos = activity["Watch History"]["VideoList"]
 
         # What videos are already accounted for?
         print("Checking for videos to download...")
