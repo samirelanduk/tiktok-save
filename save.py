@@ -57,13 +57,13 @@ async def get_videos():
         with open(source, encoding="utf8") as f: data = json.load(f)
 
         # Get list
-        activity = data["Your Activity"]
+        likes_and_favorites = data["Likes and Favorites"]
         if mode == "liked":
-            videos = activity["LikeList"]["ItemFavoriteList"]
+            videos = likes_and_favorites["Like List"]["ItemFavoriteList"]
         elif mode == "bookmarked":
-            videos = activity["Favorite Videos"]["FavoriteVideoList"]
+            videos = likes_and_favorites["Favorite Videos"]["FavoriteVideoList"]
         else:
-            videos = activity["Watch History"]["VideoList"]
+            videos = data["Your Activity"]["Watch History"]["VideoList"]
 
         # What videos are already accounted for?
         print("Checking for videos to download...")
